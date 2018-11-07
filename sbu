@@ -1,0 +1,68 @@
+#!/bin/bash
+cp ~/run-slurm.sh .
+chmod g+w . *
+
+currdir=`pwd`
+
+
+echo "What run time?"
+echo "1 hr [1]"
+echo "24 hr [2]"
+echo "100 hr [3]"
+echo "or other in normal format"
+
+read runtime
+
+if [ $runtime -eq  1 ] ; then
+	runtime=01:00:00
+elif [ $runtime -eq 2 ]; then
+ 	runtime=24:00:00
+elif [ $runtime == 3 ]; then
+	runtime=100:00:00
+fi
+
+sed -i "s/#SBATCH --time=.*/#SBATCH --time=${runtime}/" run-slurm.sh
+
+
+
+comfiles=(`find . -name "*com" -type f -exec basename {} .com \;`)
+
+
+if [ ${#comfiles[@]} -eq 0 ]
+then
+	echo "broken";
+	exit;
+elif [ ${#comfiles[@]} -gt 1 ]
+then
+	echo "There are multiple com files in the directory. Please choose one by inputting its index [n]"
+	for ii in ${!comfiles[@]}; do
+		echo "${comfiles[$ii]} [$ii]"
+	done
+	echo "Choose index"
+	read idx 
+	jobname=${comfiles[$idx]}
+else
+	jobname=${comfiles[0]}
+fi
+
+if grep -q %chk ${jobname}.com; then
+	:
+else
+	sed -i "1s/^/%chk=$jobname\n/" ${jobname}.com
+fi
+
+
+
+echo "How many processors?"
+read nproc
+
+sed -i "s/#SBATCH -n.*/#SBATCH -n ${nproc}/" run-slurm.sh
+sed -i "s/NProcShared=.*/NProcShared=${nproc}/i" ${jobname}.com
+
+
+aa=`sbatch --job-name $jobname run-slurm.sh`
+jobid=`echo $aa | awk {'print $4;'}`
+
+echo $jobid
+
+
