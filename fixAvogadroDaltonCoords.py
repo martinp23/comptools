@@ -24,7 +24,7 @@ def main(filename):
     atomcounts = []
 
     coordlines = []
-    for line in lines[6:]:
+    for line in lines[5:]:
         rx = "^([A-Z][a-z]?)\s+[+-]?\d+\.\d+\s+"
         m = re.match(rx,line)
         if m:
