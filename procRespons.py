@@ -136,6 +136,8 @@ def main(jobname,N=1):
         Vrad = conv_Vau_to_Vrad(rawVau)
         Vdeg = conv_Vrad_to_Vdeg(Vrad)
 
+        print('Wavelength: {:.2f} nm'.format(conv_freq_au_to_nm(freq)))
+        print('Number density: {} au'.format(N))
         print('Raw V: {} au'.format(rawVau))
         print('V = {} deg/Tm'.format(Vdeg))
 
