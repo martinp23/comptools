@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Avogadro v1 tends to split coordinates of the same atom-type 
 # into several different atom-type blocks, when generating Dalton output.
 
